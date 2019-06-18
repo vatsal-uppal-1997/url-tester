@@ -16,8 +16,8 @@ def open_url(url):
     try:
         response = requests.get(url.lower(), headers={'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36'}, timeout=120, verify=False, allow_redirects=True)
         if response.status_code in valid_status_codes:
-            print(f"{url} is accessible")
-            can_open.append(url)
+            print(f"{response.url} is accessible")
+            can_open.append(response.url)
         else:
             print(f"{url} is not accessible")
             cannot_open.append(url)
