@@ -14,7 +14,7 @@ def open_url(url):
     if url == None or url == "":
         return
     try:
-        response = requests.get(url.lower(), headers={"User-Agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:54.0) Gecko/20100101 Firefox/54.0","Connection":"close","Accept-Language":"en-US,en;q=0.5","Accept":"text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8","Upgrade-Insecure-Requests":"1"}, timeout=120, verify=False, allow_redirects=True)
+        response = requests.get(url.lower(), headers={'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36'}, timeout=120, verify=False, allow_redirects=True)
         if response.status_code in valid_status_codes:
             print(f"{url} is accessible")
             can_open.append(url)
@@ -29,6 +29,7 @@ if __name__ == "__main__":
     inputFile = args[0]
     canFname = args[1]
     cannotFname = args[2]
+    workers = int(args[3])
     urls = None
     if inputFile == "stdin":
         fname = sys.stdin
@@ -37,7 +38,7 @@ if __name__ == "__main__":
         with open(inputFile, encoding="utf-8", errors="ignore") as data:
             urls = data.read().split("\n")
 
-    with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
+    with concurrent.futures.ThreadPoolExecutor(max_workers=workers) as executor:
         executor.map(open_url, urls)
 
     with open(canFname, 'w') as f:
