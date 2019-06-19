@@ -12,17 +12,20 @@ can_open = []
 cannot_open = []
 followRedirects = False
 
-def open_url(url):
+def open_url(url, scheme="https", calledAgain=False):
     if url == None or url == "":
         return
     url = url.lower()
-    parse = urlparse(url, "https")
-    url = parse._replace(scheme="https").geturl()
+    parse = urlparse(url, scheme)
+    url = parse._replace(scheme=scheme).geturl()
     try:
         response = requests.get(url.lower(), headers={'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36'}, timeout=120, verify=False, allow_redirects=followRedirects)
         if (response.text != None and response.text != "") or response.status_code in valid_status_codes:
             print(f"{response.url} is accessible")
-            can_open.append(response.url)
+            if calledAgain:
+                can_open.append(response.url)
+            else:
+                open_url(url, "http", True)
         else:
             print(f"{url} is not accessible")
             cannot_open.append(url)
