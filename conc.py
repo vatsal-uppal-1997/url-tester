@@ -18,19 +18,35 @@ def open_url(url, scheme="https", calledAgain=False):
     url = url.lower()
     parse = urlparse(url, scheme)
     url = parse._replace(scheme=scheme).geturl()
+    error = False
     try:
-        response = requests.get(url.lower(), headers={'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36'}, timeout=120, verify=False, allow_redirects=followRedirects)
+        response = requests.get(url.lower(), headers={'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36'}, verify=False, allow_redirects=followRedirects, timeout=60)
         if (response.text != None and response.text != "") or response.status_code in valid_status_codes:
-            print(f"{response.url} is accessible")
-            if calledAgain:
-                can_open.append(response.url)
+            if scheme == "http":
+                print(f"{response.url} http version is accessible")
             else:
-                open_url(url, "http", True)
+                print(f"{response.url} is accessible")
+            return
         else:
-            print(f"{url} is not accessible")
-            cannot_open.append(url)
+            if scheme == "http":
+                print(f"\t{url} is not accessible")
+                return
+            else:
+                print(f"\t{url} is not accessible --- Trying with http again")
+            error = True
     except:
-        cannot_open.append(url)
+        if scheme == "http":
+            print(f"\t{url} is not accessible")
+            return
+        else:
+            print(f"\t{url} is not accessible --- Trying with http again")
+        error = True
+    time.sleep(2)
+    if calledAgain:
+        cannot_open.append(response.url)
+    elif error:
+        open_url(url, "http", True)
+
 
 if __name__ == "__main__":
     args = sys.argv[1:]
